@@ -1,4 +1,3 @@
-Hello Git
 
 
 class Scheduler:
@@ -19,3 +18,23 @@ class Job:
 		self.next_run = None
 		self.unit = None
 		self.period = None
+
+	@property
+	def second(self):
+		assert self.interval == 1
+		return self.seconds
+
+	@property
+	def seconds(self):
+		self.unit = 'seconds'
+		return self
+
+	@property
+	def minute(self):
+		assert self.interval == 1
+		return self.minutes
+
+	@property
+	def minutes(self):
+		self.unit = 'minutes'
+		return self
