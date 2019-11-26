@@ -11,6 +11,11 @@ class Scheduler:
 		self.jobs.append(job)
 		return job
 
+	def run_pending(self):
+		all_jobs = (job for job in self.jobs)
+		for job in sorted(all_jobs):
+			job.run()
+
 
 class Job:
 	def __init__(self, interval):
@@ -20,6 +25,9 @@ class Job:
 		self.next_run = None
 		self.unit = None
 		self.period = None
+
+	def __lt__(self, other):
+		return self.next_run < other.next_run
 
 	@property
 	def second(self):
@@ -51,3 +59,6 @@ class Job:
 		assert self.unit in ('seconds', 'minutes')
 		self.period = datetime.timedelta(**{self.unit:self.interval})
 		self.next_run = datetime.datetime.now() + self.period
+
+	def run(self):
+		pass
