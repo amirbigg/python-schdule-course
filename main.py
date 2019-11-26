@@ -61,4 +61,24 @@ class Job:
 		self.next_run = datetime.datetime.now() + self.period
 
 	def run(self):
-		pass
+		ret = self.job_func()
+		self.last_run = datetime.datetime.now()
+		self._schedule_next_run()
+		return ret
+
+
+default_scheduler = Scheduler()
+
+
+def every(interval=1):
+	return default_scheduler.every(interval)
+
+
+def run_pending():
+	return default_scheduler.run_pending()
+
+
+
+
+
+
