@@ -1,4 +1,5 @@
 from functools import partial, update_wrapper
+import datetime
 
 
 class Scheduler:
@@ -47,4 +48,6 @@ class Job:
 		return self
 
 	def _schedule_next_run(self):
-		pass
+		assert self.unit in ('seconds', 'minutes')
+		self.period = datetime.timedelta(**{self.unit:self.interval})
+		self.next_run = datetime.datetime.now() + self.period
