@@ -1,5 +1,6 @@
 from functools import partial, update_wrapper
 import datetime
+import time
 
 
 class ScheduleError(Exception):
@@ -26,6 +27,11 @@ class Scheduler:
 		all_jobs = (job for job in self.jobs if job.should_run)
 		for job in sorted(all_jobs):
 			job.run()
+
+	def run_all(self, delay_seconds):
+		for job in self.jobs:
+			job.run()
+			time.sleep(delay_seconds)
 
 
 class Job:
@@ -95,8 +101,8 @@ def every(interval=1):
 def run_pending():
 	return default_scheduler.run_pending()
 
-
-
+def run_all(delay_seconds=0):
+	default_scheduler.run_all(delay_seconds)
 
 
 
