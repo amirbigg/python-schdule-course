@@ -33,6 +33,12 @@ class Scheduler:
 			job.run()
 			time.sleep(delay_seconds)
 
+	@property
+	def next_run(self):
+		if not self.jobs:
+			return None
+		return min(self.jobs).next_run
+
 
 class Job:
 	def __init__(self, interval):
@@ -104,5 +110,6 @@ def run_pending():
 def run_all(delay_seconds=0):
 	default_scheduler.run_all(delay_seconds)
 
-
+def next_run():
+	return default_scheduler.next_run
 
