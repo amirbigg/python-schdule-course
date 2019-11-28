@@ -50,6 +50,7 @@ class Job:
 		self.job_func = None
 		self.last_run = None
 		self.next_run = None
+		self.at_time = None
 		self.unit = None
 		self.period = None
 
@@ -78,14 +79,54 @@ class Job:
 		self.unit = 'minutes'
 		return self
 
+	@property
+	def hour(self):
+		if self.interval != 1:
+			raise IntervalError('use hours instead of hour')
+		return self.hours
+
+	@property
+	def hours(self):
+		self.unit = 'hours'
+		return self
+
+	@property
+	def day(self):
+		if self.interval != 1:
+			raise IntervalError('use days instead of day')
+		return self.days
+
+	@property
+	def days(self):
+		self.unit = 'days'
+		return self
+
+
 	def do(self, job_func, *args, **kwargs):
 		self.job_func = partial(job_func, *args, **kwargs)
 		update_wrapper(self.job_func, job_func)
 		self._schedule_next_run()
 		return self
 
+	def at(self, time_str):
+		if self.unit not in ('hours', 'days'):
+			raise ScheduleValueError('Invalid unit')
+		hour, minute = [t for t in time_str.split(':')]
+		minute = int(minute)
+		if not 0 < minute < 59:
+			raise ScheduleValueError('Invalid minute')
+		if self.unit == 'days':
+			hour = int(hour)
+			if not 0 < hour < 23:
+				raise ScheduleValueError('Invalid hour')
+		elif self.unit == 'hours':
+			hour = 0
+		self.at_time = datetime.time(hour=hour, minute=minute)
+		return self
+
+
 	def _schedule_next_run(self):
-		if self.unit not in ('seconds', 'minutes'):
+		if self.unit not in ('seconds', 'minutes', 'hours', 'days'):
 			raise ScheduleValueError('Invalid unit')
 		self.period = datetime.timedelta(**{self.unit:self.interval})
 		self.next_run = datetime.datetime.now() + self.period
